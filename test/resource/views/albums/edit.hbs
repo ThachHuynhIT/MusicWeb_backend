@@ -1,0 +1,54 @@
+<div class="container mt-4 border border-3">
+  <h2 class="mb-4 text-center">Sửa album</h2>
+  <form method="post" action="/admin/album/{{album._id}}?_method=PUT">
+    <div class="mb-3">
+      <label for="name" class="form-label">Tên Album</label>
+      <input
+        type="text"
+        class="form-control"
+        value="{{album.name}}"
+        id="name"
+        name="name"
+      />
+    </div>
+    <div class="mb-3">
+      <label for="singer" class="form-label">Tên ca sĩ</label>
+      <input
+        type="text"
+        class="form-control"
+        value="{{album.singer}}"
+        id="singer"
+        name="singer"
+      />
+    </div>
+    <div class="mb-3">
+      <label for="type" class="form-label">Thể loại</label>
+      <input
+        type="text"
+        class="form-control"
+        value="{{album.type}}"
+        id="type"
+        name="type"
+      />
+    </div>
+    <div class="mb-3">
+      <label for="type" class="form-label">Hình ảnh</label>
+      <input
+        type="text"
+        class="form-control"
+        value="{{album.img}}"
+        id="img"
+        name="img"
+      />
+    </div>
+    <div class="mb-3">
+      <label for="description" class="form-label">Mô tả</label>
+      <textarea
+        class="form-control"
+        id="description"
+        name="description"
+      >{{album.description}}</textarea>
+    </div>
+    <button type="submit" class="btn btn-primary">Lưu</button>
+  </form>
+</div>

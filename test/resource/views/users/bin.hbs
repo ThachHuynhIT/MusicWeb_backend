@@ -1,0 +1,100 @@
+<div class="mt-4">
+    <div>
+        <h2 class="text-danger">Danh sách user đã xoá</h2>
+        <a href="/admin/user/list">Danh sách user</a>
+    </div>
+    <table class="table table-striped-columns border border-3">
+        <thead class="table-dark">
+            <tr>
+                <th scope="col">STT</th>
+                <th scope="col">Username</th>
+                <th scope="col">Tên</th>
+                <th scope="col">Email</th>
+                <th scope="col">Avata</th>
+                <th scope="col">Thời gian tạo</th>
+                <th scope="col">Thời gian sửa đổi</th>
+                <th scope="col">Thời gian xoá</th>
+                <th scope="col"></th>
+            </tr>
+        </thead>
+        <tbody>
+            {{#each user}}
+            <tr>
+                <th scope="row">{{sum @index 1}}</th>
+                <td>{{this.username}}</td>
+                <td>{{this.name}}</td>
+                <td>{{this.email}}</td>
+                <td>{{this.avatar}}</td>
+                <td>{{this.creatAt}}</td>
+                <td>{{this.updateA}}</td>
+                <td>{{this.deletedAt}}</td>
+                <td>
+                    <a class="btn btn-link btn-restore" data-id="{{this._id}}" href="">Khôi phục</a>
+                    <a class="btn btn-link" href="/admin/user/delete" data-id="{{this._id}}" data-bs-toggle="modal"
+                        data-bs-target="#delete-user-modal">Xoá vĩnh viễn</a>
+                </td>
+            </tr>
+            {{else}}
+            <tr>
+                <td class="text-center" colspan="8">
+                    <b> Thùng rác trống</b>
+                </td>
+            </tr>
+            {{/each}}
+        </tbody>
+    </table>
+</div>
+
+{{! Delete confirm }}
+<div class="modal fade" id="delete-user-modal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Xoá user?</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                Bạn có chắn chắn muốn xoá vĩnh viễn user này?
+            </div>
+            <div class="modal-footer">
+                <button id="btn-delete-user" type="button" class="btn btn-danger">Chắc chắn</button>
+                <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Huỷ</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+{{!-- hidden form --}}
+<form name="delete-user-form" method="post"></form>
+<form name="restore-user-form" method="post"></form>
+
+<script>
+    var deleteModal = document.getElementById('delete-user-modal');
+    var btnDeleteAlbum = document.getElementById('btn-delete-user');
+    var deleteForm = document.forms['delete-user-form'];
+    var restoreForm = document.forms['restore-user-form'];
+    var btnRestore = document.querySelectorAll('.btn-restore');
+    var userID;
+    var userID2;
+
+    deleteModal.addEventListener('show.bs.modal', event => {
+        var button = event.relatedTarget
+        userID = button.getAttribute('data-id')
+    });
+
+    btnDeleteAlbum.onclick = function () {
+        deleteForm.action = '/admin/user/force/' + userID + "?_method=DELETE";
+        deleteForm.submit();
+    };
+
+    btnRestore.forEach((restoreBtn) => {
+        restoreBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+
+            userID2 = restoreBtn.getAttribute('data-id');
+            restoreForm.action = '/admin/user/restore/' + userID2 + '?_method=PATCH';
+            restoreForm.submit();
+        });
+    });
+
+</script>

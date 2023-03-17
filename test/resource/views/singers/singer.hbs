@@ -1,0 +1,135 @@
+<form class=" mt-4" name="container-action" method="post" action="/admin/singer/handle-form-action">
+  <div class="mt-4">
+    <h2>Danh sách ca sĩ</h2>
+    {{#if deletedCount}}
+    <a href="/admin/singer/bin">Danh sách ca sĩ đã xoá ({{deletedCount}})</a>
+    {{/if}}
+  </div>
+  <div class="mb-2 d-flex">
+    <div class="form-check">
+      <input class="form-check-input" type="checkbox" value="" id="checkbox-all" />
+      <label class="form-check-label" for="checkbox-all">
+        Chọn tất cả
+      </label>
+      <select class="form-select form-select-sm select-action" aria-label="Default select example" name="actionName"
+        required>
+        <option value="">-- Chọn --</option>
+        <option value="delete">Xoá</option>
+      </select>
+      <button class="btn btn-primary mt-1 disabled" id="btn-checkbox-submit" type="submit">Thực hiện</button>
+    </div>
+  </div>
+  <table class="table table-striped-columns border border-3">
+    <thead class="table-dark">
+      <tr>
+        <th scope="col"></th>
+        <th scope="col">STT</th>
+        <th scope="col">Tên</th>
+        <th scope="col">Album</th>
+        <th scope="col">Quốc gia</th>
+        <th scope="col">Hình ảnh</th>
+        <th scope="col"></th>
+      </tr>
+    </thead>
+    <tbody>
+      {{#each singer}}
+      <tr>
+        <td>
+          <div class="form-check">
+            <input class="form-check-input" type="checkbox" name="singerIDs[]" value="{{this._id}}"
+              id="flexCheckDefault" />
+          </div>
+        </td>
+        <th scope="row">{{sum @index 1}}</th>
+        <td>{{this.name}}</td>
+        <td>{{this.album}}</td>
+        <td>{{this.nation}}</td>
+        <td><img class="img-thumbnail" src="{{this.img}}" style="max-height: 150px;"></td>
+        <td>
+          <a class="btn btn-link" href="/admin/singer/edit/{{this._id}}">Sửa</a>
+          <a class="btn btn-link" href="/admin/singer/delete" data-id="{{this._id}}" data-bs-toggle="modal"
+            data-bs-target="#delete-singer-modal">Xoá</a>
+        </td>
+      </tr>
+      {{else}}
+      <tr>
+        <td class="text-center" colspan="8">Không có ca sĩ nào.
+          <a href="/admin/singer/create"> Thêm ca sĩ mới </a>
+        </td>
+      </tr>
+      {{/each}}
+    </tbody>
+  </table>
+</form>
+
+{{! Delete confirm }}
+<div class="modal fade" id="delete-singer-modal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Xoá ca sĩ?</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        Bạn có chắn chắn muốn xoáca sĩ ?
+      </div>
+      <div class="modal-footer">
+        <button id="btn-delete-singer" type="button" class="btn btn-danger">Chắc
+          chắn</button>
+        <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Huỷ</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+{{! hidden form delete }}
+<form name="delete-singer-form" method="post"></form>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    var deleteModal = document.getElementById('delete-singer-modal');
+    var singerID;
+    var btnDeletesinger = document.getElementById('btn-delete-singer');
+    var deleteForm = document.forms['delete-singer-form'];
+    var checkboxAll = $('#checkbox-all');
+    var singerItemCheckbox = $('input[name="singerIDs[]"]');
+    var btnCheckboxSubmit = $('#btn-checkbox-submit')
+
+    // dialog confirm delete
+    deleteModal.addEventListener('show.bs.modal', event => {
+      var button = event.relatedTarget
+      singerID = button.getAttribute('data-id')
+    });
+
+    // submit form delete
+    btnDeletesinger.onclick = function () {
+      deleteForm.action = '/admin/singer/' + singerID + "?_method=DELETE";
+      deleteForm.submit();
+    };
+
+    // check all box change
+    checkboxAll.change(function () {
+      var isCheckedAll = $(this).prop('checked')
+      singerItemCheckbox.prop('checked', isCheckedAll)
+      renderSubmitBtnCheckAll()
+    });
+
+    // item check change
+    singerItemCheckbox.change(function () {
+      var isCheckedAll = singerItemCheckbox.length === $('input[name="singerIDs[]"]:checked').length;
+      checkboxAll.prop('checked', isCheckedAll)
+      renderSubmitBtnCheckAll()
+    });
+
+    // render submit btn check all
+    function renderSubmitBtnCheckAll() {
+      var checkedCount = $('input[name="singerIDs[]"]:checked').length;
+      if (checkedCount > 0) {
+        btnCheckboxSubmit.removeClass('disabled')
+      } else {
+        btnCheckboxSubmit.addClass('disabled')
+      }
+    }
+
+  })
+</script>

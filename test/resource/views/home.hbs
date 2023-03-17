@@ -1,0 +1,25 @@
+<div class="px-4 text-center">
+  <div class="row gx-5">
+    <div class="col mb-3">
+      <div class="mt-4 mb-3 p-3 border bg-light">Album</div>
+      <a class="btn btn-primary" href="/admin/album/create" role="button">Thêm album</a>
+      <a class="btn btn-primary" href="/admin/album" role="button">Dánh sách album</a>
+    </div>
+    <div class="row">
+      {{#each album}}
+      <div class="col-sm-4 col-lg-3 mx-auto mb-2">
+        <div class="card" style="width: 18rem;">
+          <a href="/admin/album/show/{{this._id}}">
+            <img src="{{this.img}}" style="min-height: 286px;" class="card-img-top" />
+          </a>
+          <div class="card-body">
+            <h5 class="card-title">{{this.name}}</h5>
+            <p class="card-text">Singer: {{this.singer}}</p>
+            <a href="/admin/album/show/{{this._id}}" class="btn btn-primary">Xem thêm</a>
+          </div>
+        </div>
+      </div>
+      {{/each}}
+    </div>
+  </div>
+</div>

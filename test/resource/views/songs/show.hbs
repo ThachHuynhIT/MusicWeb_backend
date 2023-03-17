@@ -1,0 +1,15 @@
+<div class="mt-4">Bài hát {{song.name}}</div>
+<div class="row">
+  <div class="col-sm-4 col-lg-3">
+    <div class="card" style="width: 18rem;">
+      <a href="/admin/song/{{song.slug}}">
+        <img src="/img/{{song.img}}" class="card-img-top" alt="..." />
+      </a>
+      <div class="card-body">
+        <h5 class="card-title">{{song.name}}</h5>
+        <p class="card-text">Ca sĩ: {{song.singer}}</p>
+        <a href="/admin/song/{{song.slug}}" class="btn btn-primary">Mô tả</a>
+      </div>
+    </div>
+  </div>
+</div>

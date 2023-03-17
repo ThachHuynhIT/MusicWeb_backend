@@ -1,0 +1,144 @@
+<form class="mt-4" name="container-action" method="post" action="/admin/user/handle-form-action">
+  <div class="mt-4">
+    <h2>Danh sách user</h2>
+    {{#if deletedCount}}
+    <a href="/admin/user/bin">Danh sách user đã xoá ({{deletedCount}})</a>
+    {{/if}}
+  </div>
+  <div class="mb-2 d-flex">
+    <div class="form-check">
+      <input class="form-check-input" type="checkbox" value="" id="checkbox-all" />
+      <label class="form-check-label" for="checkbox-all">
+        Chọn tất cả
+      </label>
+      <select class="form-select form-select-sm select-action" aria-label="Default select example" name="actionName"
+        required>
+        <option value="">-- Chọn --</option>
+        <option value="delete">Xoá</option>
+      </select>
+      <button class="btn btn-primary mt-1 disabled" id="btn-checkbox-submit" type="submit">Thực hiện</button>
+    </div>
+  </div>
+  <table class="table table-striped-columns border border-3">
+    <thead class="table-dark">
+      <tr>
+        <th scope="col"></th>
+        <th scope="col">STT</th>
+        <th scope="col">Tên</th>
+        <th scope="col">Tên tài khoản</th>
+        <th scope="col">Email</th>
+        <th scope="col">Giới tính</th>
+        <th scope="col">Ngày sinh</th>
+        <th scope="col">Avatar</th>
+        <th scope="col">Thời gian khởi tạo</th>
+        <th scope="col">Thời gian chỉnh sửa</th>
+        <th scope="col"></th>
+      </tr>
+    </thead>
+    <tbody>
+      {{#each user}}
+      <tr>
+        <td>
+          <div class="form-check">
+            <input class="form-check-input" type="checkbox" name="userIDs[]" value="{{this._id}}"
+              id="flexCheckDefault" />
+          </div>
+        </td>
+        <th scope="row">{{sum @index 1}}</th>
+        <td>{{this.name}}</td>
+        <td>{{this.username}}</td>
+        <td>{{this.email}}</td>
+        <td>{{this.gender}}</td>
+        <td>{{this.dateOfBirth}}</td>
+        <td><img class="img-thumbnail" src="/img/{{this.img}}" style="
+    max-height: 150px;"></td>
+        <td>{{this.createdAt}}</td>
+        <td>{{this.updatedAt}}</td>
+        <td>
+          <a class="btn btn-link" href="/admin/user/edit/{{this._id}}">Sửa</a>
+          <a class="btn btn-link" href="/admin/user/delete" data-id="{{this._id}}" data-bs-toggle="modal"
+            data-bs-target="#delete-user-modal">Xoá</a>
+        </td>
+      </tr>
+      {{else}}
+      <tr>
+        <td class="text-center" colspan="8">Không có user nào.
+          <a href="/admin/user/create"> Tạo user mới </a>
+        </td>
+      </tr>
+      {{/each}}
+    </tbody>
+  </table>
+</form>
+
+{{! Delete confirm }}
+<div class="modal fade" id="delete-user-modal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Xoá user?</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        Bạn có chắn chắn muốn xoá user ?
+      </div>
+      <div class="modal-footer">
+        <button id="btn-delete-user" type="button" class="btn btn-danger">Chắc
+          chắn</button>
+        <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Huỷ</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+{{! hidden form delete }}
+<form name="delete-user-form" method="post"></form>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    var deleteModal = document.getElementById('delete-user-modal');
+    var userID;
+    var btnDeleteUser = document.getElementById('btn-delete-user');
+    var deleteForm = document.forms['delete-user-form'];
+    var checkboxAll = $('#checkbox-all');
+    var userItemCheckbox = $('input[name="userIDs[]"]');
+    var btnCheckboxSubmit = $('#btn-checkbox-submit')
+
+    // dialog confirm delete
+    deleteModal.addEventListener('show.bs.modal', event => {
+      var button = event.relatedTarget
+      userID = button.getAttribute('data-id')
+    });
+
+    // submit form delete
+    btnDeleteUser.onclick = function () {
+      deleteForm.action = '/admin/user/' + userID + "?_method=DELETE";
+      deleteForm.submit();
+    };
+
+    // check all box change
+    checkboxAll.change(function () {
+      var isCheckedAll = $(this).prop('checked')
+      userItemCheckbox.prop('checked', isCheckedAll)
+      renderSubmitBtnCheckAll()
+    });
+
+    // item check change
+    userItemCheckbox.change(function () {
+      var isCheckedAll = userItemCheckbox.length === $('input[name="userIDs[]"]:checked').length;
+      checkboxAll.prop('checked', isCheckedAll)
+      renderSubmitBtnCheckAll()
+    });
+
+    // render submit btn check all
+    function renderSubmitBtnCheckAll() {
+      var checkedCount = $('input[name="userIDs[]"]:checked').length;
+      if (checkedCount > 0) {
+        btnCheckboxSubmit.removeClass('disabled')
+      } else {
+        btnCheckboxSubmit.addClass('disabled')
+      }
+    }
+
+  })
+</script>

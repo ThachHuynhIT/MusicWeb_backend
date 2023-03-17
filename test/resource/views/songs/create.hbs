@@ -1,0 +1,52 @@
+<div class="container m-4 border border-3">
+  <h2 class="mb-4 text-center">Thêm bài hát</h2>
+  <form method="post" action="/admin/song/store">
+    <div class="mb-3">
+      <label for="name" class="form-label">Tên bài hát</label>
+      <input type="text" class="form-control" id="name" name="name" />
+    </div>
+ <div class="mb-3">
+      <label for="url" class="form-label">Link nhạc</label>
+      <input type="text" class="form-control" id="url" name="url" />
+    </div>
+    <div class="mb-3">
+      <label for="type" class="form-label">Thể loại</label>
+      <input type="text" class="form-control" id="type" name="type" />
+    </div>
+    <div class="mb-3">
+      <label for="type" class="form-label">Album</label>
+      <select class="form-select" aria-label="Default select example" required>
+        <option value="">Chọn album</option>
+        {{#each album}}
+          <option value="{{this.name}}">{{this.name}}</option>
+        {{/each}}
+      </select>
+    </div>
+    <div class="mb-3">
+      <label for="type" class="form-label">Ca sĩ</label>
+      <select class="form-select" aria-label="Default select example" required>
+        <option value="">Chọn ca sĩ</option>
+        {{#each singer}}
+          <option value="{{this.name}}">{{this.name}}</option>
+        {{/each}}
+      </select>
+    </div>
+    <div class="mb-3">
+      <label for="nation" class="form-label">Quốc gia</label>
+      <input type="text" class="form-control" id="nation" name="nation" />
+    </div>
+    <div class="mb-3">
+      <label for="type" class="form-label">Hình ảnh</label>
+      <input type="text" class="form-control" id="img" name="img" />
+    </div>
+    <div class="mb-3">
+      <label for="description" class="form-label">Mô tả</label>
+      <input class="form-control" id="description" name="description" />
+    </div>
+    <div class="mb-3">
+      <label for="views" class="form-label">Lượt nghe</label>
+      <input class="form-control" id="views" name="views" value="0"/>
+    </div>
+    <button type="submit" class="btn btn-primary">Thêm</button>
+  </form>
+</div>

@@ -1,0 +1,64 @@
+<div class="container mt-4 border border-3">
+  <h2 class="mt-2 mb-4 text-center"><b>Sửa thông tin người dùng</b></h2>
+  {{!-- <form method="post" action="/admin/song/{{user._id}}?_method=PUT"> --}}
+  <form method="post" enctype="multipart/form-data" action="/admin/user/update-user/{{user._id}}?_method=PUT" >
+    <div class="mb-3">
+      <label for="name" class="form-label">Tên đăng nhập</label>
+      <input
+        type="text"
+        class="form-control"
+        value="{{user.username}}"
+        id="name"
+        name="username"
+      />
+    </div>
+    <div class="mb-3">
+      <label for="singer" class="form-label">Tên</label>
+      <input
+        type="text"
+        class="form-control"
+        value="{{user.name}}"
+        id="singer"
+        name="name"
+      />
+    </div>
+    <div class="mb-3">
+      <label for="type" class="form-label">Email</label>
+      <input
+        type="email"
+        class="form-control"
+        value="{{user.email}}"
+        id="type"
+        name="email"
+      />
+    </div>
+    <div class="mb-3">
+      <label for="type" class="form-label">Ngày sinh</label>
+      <input
+        type="date"
+        class="form-control"
+        value="{{user.dateOfBirth}}"
+        id="dateOfBirth"
+        name="dateOfBirth"
+      />
+    </div>
+    <div class="mb-3">
+      <label for="type" class="form-label">Hình ảnh</label>
+      <input
+        type="file"
+        class="form-control"
+        id="img"
+        name="image"
+      />
+    </div>
+    {{!-- <div class="mb-3">
+      <label for="description" class="form-label">Mô tả</label>
+      <textarea
+        class="form-control"
+        id="description"
+        name="description"
+      >{{user.description}}</textarea>
+    </div> --}}
+    <button type="submit" class="btn btn-primary">Lưu</button>
+  </form>
+</div>

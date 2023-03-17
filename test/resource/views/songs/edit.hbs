@@ -1,0 +1,84 @@
+<div class="container border border-3 m-4">
+  <h2 class="mb-4 text-center">Sửa bài hát</h2>
+  <form method="post" action="/admin/song/{{song._id}}?_method=PUT">
+    <div class="mb-3">
+      <label for="name" class="form-label">Tên bài hát</label>
+      <input
+        type="text"
+        class="form-control"
+        value="{{song.name}}"
+        id="name"
+        name="name"
+      />
+    </div>
+     <div class="mb-3">
+      <label for="singer" class="form-label">Link</label>
+      <input
+        type="text"
+        class="form-control"
+        value="{{song.url}}"
+        id="url"
+        name="url"
+      />
+    </div>
+    <div class="mb-3">
+      <label for="singer" class="form-label">Tên ca sĩ</label>
+      <input
+        type="text"
+        class="form-control"
+        value="{{song.singer}}"
+        id="singer"
+        name="singer"
+      />
+    </div>
+    <div class="mb-3">
+      <label for="album" class="form-label">Album</label>
+      <input
+        type="text"
+        class="form-control"
+        value="{{song.album}}"
+        id="album"
+        name="album"
+      />
+    </div>
+    <div class="mb-3">
+      <label for="type" class="form-label">Thể loại</label>
+      <input
+        type="text"
+        class="form-control"
+        value="{{song.type}}"
+        id="type"
+        name="type"
+      />
+    </div>
+    <div class="mb-3">
+      <label for="img" class="form-label">Hình ảnh</label>
+      <input
+        type="text"
+        class="form-control"
+        value="{{song.img}}"
+        id="img"
+        name="img"
+      />
+    </div>
+    <div class="mb-3">
+      <label for="description" class="form-label">Mô tả</label>
+      <textarea
+        class="form-control"
+        id="description"
+        name="description"
+      >{{song.description}}</textarea>
+    </div>
+   <div class="mb-3">
+      <label for="type" class="form-label">Lượt xem</label>
+      <input
+        type="text"
+        class="form-control"
+        value="{{song.views}}"
+        id="views"
+        name="views"
+      />
+    </div>
+    <button type="submit" class="btn btn-primary">Lưu</button>
+  </form>
+</div>

@@ -1,0 +1,98 @@
+<div class=" mt-4">
+    <div>
+        <h2 class="text-danger">Danh sách bài hát đã xoá</h2>
+        <a href="/admin/song">Danh sách bài hát</a>
+    </div>
+    <table class="table table-striped-columns border border-3">
+        <thead class="table-dark">
+            <tr>
+                <th scope="col">STT</th>
+                <th scope="col">Tên</th>
+                <th scope="col">Ca sĩ</th>
+                <th scope="col">Thể loại</th>
+                <th scope="col">Mô tả</th>
+                <th scope="col">Hình ảnh</th>
+                <th scope="col">Thời gian xoá</th>
+                <th scope="col"></th>
+            </tr>
+        </thead>
+        <tbody>
+            {{#each song}}
+            <tr>
+                <th scope="row">{{sum @index 1}}</th>
+                <td>{{this.name}}</td>
+                <td>{{this.singer}}</td>
+                <td>{{this.type}}</td>
+                <td>{{this.description}}</td>
+                <td>{{this.img}}</td>
+                <td>{{this.deletedAt}}</td>
+                <td>
+                    <a class="btn btn-link btn-restore" data-id="{{this._id}}" href="">Khôi phục</a>
+                    <a class="btn btn-link" href="/admin/song/delete" data-id="{{this._id}}" data-bs-toggle="modal"
+                        data-bs-target="#delete-song-modal">Xoá vĩnh viễn</a>
+                </td>
+            </tr>
+            {{else}}
+            <tr>
+                <td class="text-center" colspan="8">
+                   <b> Thùng rác trống</b>
+                </td>
+            </tr>
+            {{/each}}
+        </tbody>
+    </table>
+</div>
+
+{{! Delete confirm }}
+<div class="modal fade" id="delete-song-modal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Xoá bài hát này?</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                Bạn có chắn chắn muốn xoá vĩnh viễn bài hát này?
+            </div>
+            <div class="modal-footer">
+                <button id="btn-delete-song" type="button" class="btn btn-danger">Chắc chắn</button>
+                <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Huỷ</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+{{!-- hidden form --}}
+<form name="delete-song-form" method="post"></form>
+<form name="restore-song-form" method="post"></form>
+
+<script>
+    var deleteModal = document.getElementById('delete-song-modal');
+    var btnDeleteAlbum = document.getElementById('btn-delete-song');
+    var deleteForm = document.forms['delete-song-form'];
+    var restoreForm = document.forms['restore-song-form'];
+    var btnRestore = document.querySelectorAll('.btn-restore');
+    var songID;
+    var songID2;
+
+    deleteModal.addEventListener('show.bs.modal', event => {
+        var button = event.relatedTarget
+        songID = button.getAttribute('data-id')
+    });
+
+    btnDeleteAlbum.onclick = function () {
+        deleteForm.action = '/admin/song/force/' + songID + "?_method=DELETE";
+        deleteForm.submit();
+    };
+
+    btnRestore.forEach((restoreBtn) => {
+        restoreBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+
+            songID2 = restoreBtn.getAttribute('data-id');
+            restoreForm.action = '/admin/song/restore/' + songID2 + '?_method=PATCH';
+            restoreForm.submit();
+        });
+    });
+
+</script>

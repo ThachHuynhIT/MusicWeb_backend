@@ -1,0 +1,64 @@
+<div class="container m-4 border border-3">
+  <h2 class="mb-4 text-center">Sửa ca sĩ</h2>
+  <form method="post" action="/admin/singer/{{singer._id}}?_method=PUT">
+    <div class="mb-3">
+      <label for="name" class="form-label">Tên ca sĩ</label>
+      <input
+        type="text"
+        class="form-control"
+        value="{{singer.name}}"
+        id="name"
+        name="name"
+      />
+    </div>
+    <div class="mb-3">
+      <label for="age" class="form-label">Tên ca sĩ</label>
+      <input
+        type="text"
+        class="form-control"
+        value="{{singer.age}}"
+        id="age"
+        name="age"
+      />
+    </div>
+    <div class="mb-3">
+      <label for="album" class="form-label">Album</label>
+      <input
+        type="text"
+        class="form-control"
+        value="{{singer.album}}"
+        id="album"
+        name="album"
+      />
+    </div>
+     <div class="mb-3">
+      <label for="album" class="form-label">Quốc gia</label>
+      <input
+        type="text"
+        class="form-control"
+        value="{{singer.nation}}"
+        id="nation"
+        name="nation"
+      />
+    </div>
+    <div class="mb-3">
+      <label for="image" class="form-label">Hình ảnh</label>
+      <input
+        type="text"
+        class="form-control"
+        value="{{singer.img}}"
+        id="image"
+        name="image"
+      />
+    </div>
+    <div class="mb-3">
+      <label for="description" class="form-label">Mô tả</label>
+      <textarea
+        class="form-control"
+        id="description"
+        name="description"
+      >{{singer.description}}</textarea>
+    </div>
+    <button type="submit" class="btn btn-primary">Lưu</button>
+  </form>
+</div>

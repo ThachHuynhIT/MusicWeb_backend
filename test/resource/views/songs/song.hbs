@@ -1,0 +1,142 @@
+<form class=" mt-4" name="container-action" method="post" action="/admin/song/handle-form-action">
+  <div class="mt-4">
+    <h2>Danh sách bài hát</h2>
+    {{#if deletedCount}}
+    <a href="/admin/song/bin">Danh sách bài hát đã xoá ({{deletedCount}})</a>
+    {{/if}}
+  </div>
+  <div class="mb-2 d-flex">
+    <div class="form-check">
+      <input class="form-check-input" type="checkbox" value="" id="checkbox-all" />
+      <label class="form-check-label" for="checkbox-all">
+        Chọn tất cả
+      </label>
+      <select class="form-select form-select-sm select-action" aria-label="Default select example" name="actionName"
+        required>
+        <option value="">-- Chọn --</option>
+        <option value="delete">Xoá</option>
+      </select>
+      <button class="btn btn-primary mt-1 disabled" id="btn-checkbox-submit" type="submit">Thực hiện</button>
+    </div>
+  </div>
+  <table class="table table-striped-columns border border-4">
+    <thead class="table-dark ">
+      <tr>
+        <th scope="col"></th>
+        <th scope="col">STT</th>
+        <th scope="col">Tên</th>
+        <th scope="col">Ca sĩ</th>
+        <th scope="col">Thể loại</th>
+        <th scope="col">Album</th>
+        <th scope="col">Quốc gia</th>
+        <th scope="col">Views</th>
+        <th scope="col">Hình ảnh</th>
+        <th scope="col"></th>
+      </tr>
+    </thead>
+    <tbody>
+      {{#each song}}
+      <tr>
+        <td>
+          <div class="form-check">
+            <input class="form-check-input" type="checkbox" name="songIDs[]" value="{{this._id}}"
+              id="flexCheckDefault" />
+          </div>
+        </td>
+        <th scope="row">{{sum @index 1}}</th>
+        <td>{{this.name}}</td>
+        <td>{{this.singer}}</td>
+        <td>{{this.type}}</td>
+        <td>{{this.album}}</td>
+        <td>{{this.legion}}</td>
+        <td>{{this.views}}</td>
+        <td><img class="img-thumbnail" src="{{this.img}}" style="
+    max-height: 150px;"></td>
+        <td>
+          <a class="btn btn-link" href="/admin/song/edit/{{this._id}}">Sửa</a>
+          <a class="btn btn-link" href="/admin/song/delete" data-id="{{this._id}}" data-bs-toggle="modal"
+            data-bs-target="#delete-song-modal">Xoá</a>
+        </td>
+      </tr>
+      {{else}}
+      <tr>
+        <td class="text-center" colspan="8">Không có bài hát nào.
+          <a href="/admin/song/create"> Thêm bài hát mới </a>
+        </td>
+      </tr>
+      {{/each}}
+    </tbody>
+  </table>
+</form>
+
+{{! Delete confirm }}
+<div class="modal fade" id="delete-song-modal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Xoá bài hát?</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        Bạn có chắn chắn muốn xoábài hát ?
+      </div>
+      <div class="modal-footer">
+        <button id="btn-delete-song" type="button" class="btn btn-danger">Chắc
+          chắn</button>
+        <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Huỷ</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+{{! hidden form delete }}
+<form name="delete-song-form" method="post"></form>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    var deleteModal = document.getElementById('delete-song-modal');
+    var songID;
+    var btnDeleteSong = document.getElementById('btn-delete-song');
+    var deleteForm = document.forms['delete-song-form'];
+    var checkboxAll = $('#checkbox-all');
+    var songItemCheckbox = $('input[name="songIDs[]"]');
+    var btnCheckboxSubmit = $('#btn-checkbox-submit')
+
+    // dialog confirm delete
+    deleteModal.addEventListener('show.bs.modal', event => {
+      var button = event.relatedTarget
+      songID = button.getAttribute('data-id')
+    });
+
+    // submit form delete
+    btnDeleteSong.onclick = function () {
+      deleteForm.action = '/admin/song/' + songID + "?_method=DELETE";
+      deleteForm.submit();
+    };
+
+    // check all box change
+    checkboxAll.change(function () {
+      var isCheckedAll = $(this).prop('checked')
+      songItemCheckbox.prop('checked', isCheckedAll)
+      renderSubmitBtnCheckAll()
+    });
+
+    // item check change
+    songItemCheckbox.change(function () {
+      var isCheckedAll = songItemCheckbox.length === $('input[name="songIDs[]"]:checked').length;
+      checkboxAll.prop('checked', isCheckedAll)
+      renderSubmitBtnCheckAll()
+    });
+
+    // render submit btn check all
+    function renderSubmitBtnCheckAll() {
+      var checkedCount = $('input[name="songIDs[]"]:checked').length;
+      if (checkedCount > 0) {
+        btnCheckboxSubmit.removeClass('disabled')
+      } else {
+        btnCheckboxSubmit.addClass('disabled')
+      }
+    }
+
+  })
+</script>
