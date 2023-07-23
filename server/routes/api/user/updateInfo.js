@@ -2,11 +2,14 @@ const jwt = require("jsonwebtoken");
 const User = require("../../../models/User");
 const Resize = require("../../../middlewares/Resize");
 const path = require("path");
-const { responseSuccessDetails } = require("../../../util/response");
+const {
+  responseSuccessDetails,
+  responseError,
+} = require("../../../util/response");
 const { isValidObjectId } = require("mongoose");
 require("dotenv").config();
 
-module.exports = async function (req, res, next) {
+module.exports = async function (req, res) {
   try {
     const imagePath = path.join("test/public/img");
     const fileUpload = new Resize(imagePath);
@@ -32,6 +35,7 @@ module.exports = async function (req, res, next) {
 
     return res.json(responseSuccessDetails("Update success"));
   } catch (error) {
-    return res.status(500).json({ message: "Internal server error" });
+    console.error("Error:", error);
+    return res.json(responseError("Internal server error", 500));
   }
 };

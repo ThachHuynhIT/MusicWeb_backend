@@ -109,8 +109,8 @@ module.exports = async (req, res, next) => {
     await Promise.all([updateUserPromise, updateSongPromise]);
 
     return res.status(200).json(responseSuccessDetails(song));
-    // .json(responseSuccessDetails({ message: "Update success" }));
   } catch (error) {
-    return res.status(500).json(responseError("Failed to update last song."));
+    console.error("Error:", error);
+    return res.json(responseError("Internal server error", 500));
   }
 };

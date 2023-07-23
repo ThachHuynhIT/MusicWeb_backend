@@ -25,7 +25,7 @@ router.get("/get-album/:page", getAlbum);
 router.get("/get-last-music/:userId", getLastMusic);
 router.put("/put-current-song/:userId", putCurrentSong);
 // search
-router.get("/searchSong", searchName);
+router.get("/search-song", searchName);
 // site
 router.get("/song-type/:type/:page", getSongType);
 router.get("/song-legion/:legion/:page", getSongLegion);

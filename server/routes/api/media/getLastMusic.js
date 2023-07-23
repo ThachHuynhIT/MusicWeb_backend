@@ -3,60 +3,62 @@ const Song = require("../../../models/Song");
 const Album = require("../../../models/Album");
 const Playlist = require("../../../models/PlayList");
 const jwt = require("jsonwebtoken");
+const {
+  responseError,
+  responseSuccessDetails,
+} = require("../../../util/response");
 
 module.exports = async function (req, res, next) {
-  const userId = req.params.userId;
+  try {
+    const userId = req.params.userId;
 
-  if (userId) {
-    User.findById({ _id: userId }).then((user) => {
-      const songId = user.lastSong;
-      const lastList = user.lastList;
+    if (!userId) {
+      return res.status(400).send("Invalid user ID");
+    }
 
-      Song.find({})
-        .then((song) => {
-          var lastSong = song.filter((song) => {
-            return song.id.indexOf(songId) !== -1;
-          });
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).send("User not found");
+    }
 
-          switch (user.typeList) {
-            case "Album":
-              Album.findById({ _id: lastList }).then((album) => {
-                var albumName = album.name;
-                let songList = song.filter((song) => {
-                  return song.album.indexOf(albumName) !== -1;
-                });
-                res.send({
-                  song: lastSong,
-                  songList: songList,
-                });
-              });
-              break;
-            case "Singer":
-              var songList = song.filter((song) => {
-                return song.singer.indexOf(lastList) !== -1;
-              });
-              res.send({
-                song: lastSong,
-                songList: songList,
-              });
-              break;
-            case "Playlist":
-              Playlist.findById({ _id: lastList }).then((playlist) => {
-                songList = playlist;
-                res.send({
-                  song: lastSong,
-                  songList: songList,
-                });
-              });
-              break;
-            default:
-              res.send("Lỗi");
-          }
-        })
-        .catch(next);
-        
-    });
-  } else {
-    return res.status(400).send(userId);
+    const songId = user.lastSong;
+    const lastList = user.lastList;
+
+    const song = await Song.find({});
+    const lastSong = song.find((song) => song.id === songId);
+
+    let songList = [];
+    switch (user.typeList) {
+      case "Album":
+        const album = await Album.findById(lastList);
+        if (!album) {
+          return res.json(responseError("Album not found"));
+        }
+        const albumName = album.name;
+        songList = song.filter((song) => song.album.includes(albumName));
+        break;
+      case "Singer":
+        songList = song.filter((song) => song.singer.includes(lastList));
+        break;
+      case "Playlist":
+        const playlist = await Playlist.findById(lastList);
+        if (!playlist) {
+          return res.json(responseError("Playlist not found"));
+        }
+        songList = playlist.songs;
+        break;
+      default:
+        return res.json(responseError("Invalid list type"));
+    }
+
+    return res.json(
+      responseSuccessDetails({
+        song: lastSong,
+        songList: songList,
+      })
+    );
+  } catch (error) {
+    console.error("Error:", error);
+    return res.json(responseError("Internal server error", 500));
   }
 };

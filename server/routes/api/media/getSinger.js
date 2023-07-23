@@ -1,28 +1,33 @@
 const Singer = require("../../../models/Singer");
-const mongoose = require("mongoose");
+const {
+  responseSuccessDetails,
+  responseError,
+} = require("../../../util/response");
 
-module.exports = (req, res, next) => {
-  let perPage = 5;
-  let page = req.params.page || 1;
-  singerType = req.params.type;
+module.exports = async (req, res) => {
+  try {
+    const perPage = 5;
+    const page = parseInt(req.params.page) || 1;
 
-  if (page < 1) {
-    Singer.find({}).then((singer) => {
-      res.send({ singer });
-    });
-  } else {
-    Singer.find({})
-      .skip(perPage * page - perPage)
-      .limit(perPage)
-      .exec((err, singer) => {
-        singer.countDocuments((err, count) => {
-          if (err) return next(err);
-          res.send({
-            singer,
-            current: page,
-            pages: Math.ceil(count / perPage),
-          });
-        });
-      });
+    if (page < 1) {
+      const allSingers = await Singer.find({});
+      return res.json(responseSuccessDetails({ singers: allSingers }));
+    }
+
+    const totalSingersCount = await Singer.countDocuments({});
+    const singers = await Singer.find({})
+      .skip(perPage * (page - 1))
+      .limit(perPage);
+
+    return res.json(
+      responseSuccessDetails({
+        singers: singers,
+        current: page,
+        totalPages: Math.ceil(totalSingersCount / perPage),
+      })
+    );
+  } catch (error) {
+    console.error("Error:", error);
+    return res.json(responseError("Internal server error", 500));
   }
 };

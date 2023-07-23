@@ -1,15 +1,14 @@
 const express = require("express");
 const verifyToken = require("../.././middlewares/verifyToken");
-const updateInfo = require("./updateInfoUser")
+const updateInfo = require("./updateInfoUser");
 const upload = require("../.././middlewares/uploadMiddleware");
-
 
 const router = express.Router();
 
 const userController = require("../../controllers/UserController");
 
 router.get("/", (req, res) => {
-    res.render("partials/search");
+  res.render("partials/search");
 });
 router.get("/list", verifyToken, userController.home);
 router.get("/signup", verifyToken, userController.signup);

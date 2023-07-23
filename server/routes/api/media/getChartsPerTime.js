@@ -1,5 +1,5 @@
 const {
-  responseSuccessList,
+  responseSuccessDetails,
   responseError,
 } = require("../../../util/response");
 const Song = require("../../../models/Song");
@@ -16,9 +16,11 @@ module.exports = async (req, res) => {
       const songs = await Song.find({})
         .sort({ [query]: -1 })
         .limit(10);
-      return res.json(responseSuccessList(songs));
+      return res.json(responseSuccessDetails(songs));
     }
-  } catch (err) {
-    return res.status(500).json(responseError("Internal server error"));
+  } catch (error) {
+    console.error("Error:", error);
+
+    return res.json(responseError("Internal server error", 500));
   }
 };

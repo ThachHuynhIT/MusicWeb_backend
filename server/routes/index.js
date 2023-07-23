@@ -25,6 +25,8 @@ function route(app) {
         return res.json(responseSuccessDetails("Update success"));
       }
     } catch (error) {
+      console.error("Error:", error);
+
       return res.status(500).json(responseError("Internal server error"));
     }
   });

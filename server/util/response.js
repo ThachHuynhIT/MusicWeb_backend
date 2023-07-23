@@ -17,16 +17,7 @@ const responseSuccessDetails = (item, message) => {
   };
 };
 
-const responseSuccessList = (data, message) => {
-  return {
-    isSuccess: true,
-    data: data,
-    message: message,
-  };
-};
-
 module.exports = {
   responseError,
   responseSuccessDetails,
-  responseSuccessList,
 };
