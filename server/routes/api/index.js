@@ -5,11 +5,10 @@ const user = require("./user");
 
 const router = express.Router();
 
-    router.use("/media", media);
+router.use("/media", media);
 
-    router.use("/user", user);
+router.use("/user", user);
 
-    router.use("/playlist", playlist);
-  
-  
-  module.exports = router;
+router.use("/playlist", playlist);
+
+module.exports = router;

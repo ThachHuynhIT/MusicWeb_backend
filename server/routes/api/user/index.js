@@ -1,16 +1,15 @@
 const express = require("express");
+const jwt = require("jsonwebtoken");
 const User = require("../../../models/User");
 const loginValidator = require("../../../validations/login");
 const signupValidator = require("../../../validations/signup");
 const upload = require("../../../middlewares/uploadMiddleware");
-const jwt = require("jsonwebtoken");
-const co = require("co");
 const updateInfo = require("./updateInfo");
 const changePassword = require("./changePassword");
 
 const router = express.Router();
 
-router.post("/login", (req, res, next) => {
+router.post("/login", async (req, res, next) => {
   const { username, password } = req.body;
   const { isValid, errors } = loginValidator(req.body);
 
@@ -18,40 +17,39 @@ router.post("/login", (req, res, next) => {
     return res.status(400).json({ error: true, errors });
   }
 
-  co(function* () {
-    const user = yield User.findOne({ username });
+  try {
+    const user = await User.findOne({ username });
+
     if (!user) {
-      res.status(401).json({
+      return res.status(401).json({
         message: { msgBody: "Tên đăng nhập không đúng", msgError: true },
       });
     }
 
-    const isMatch = yield user.comparePassword(password);
+    const isMatch = await user.comparePassword(password);
     if (!isMatch) {
-      res.status(401).json({
+      return res.status(401).json({
         message: { msgBody: "Mật khẩu không đúng", msgError: true },
       });
     }
 
-    return user;
-  })
-    .then((user) => {
-      const id = user._id;
+    const id = user._id;
 
-      const token = jwt.sign({ _id: id }, process.env.TOKEN_SECRET, {
-        expiresIn: 60 * 60 * 24,
-      });
-      res
-        .cookie("access_token", token, { httpOnly: true, sameSite: true })
-        .header({
-          username: user.username,
-        })
-        .send({ userId: id, isAuthen: true, access_token: token });
-    })
-    .catch((err) => next(err));
+    const token = jwt.sign({ _id: id }, process.env.TOKEN_SECRET, {
+      expiresIn: 60 * 60 * 24,
+    });
+    res
+      .cookie("access_token", token, { httpOnly: true, sameSite: true })
+      .header({
+        username: user.username,
+      })
+      .json({ userId: id, isAuthen: true, access_token: token });
+  } catch (err) {
+    return res.status(500).json({ message: "Internal server error" });
+  }
 });
 
-router.post("/signup", (req, res, next) => {
+router.post("/signup", async (req, res, next) => {
   const { username } = req.body;
   const { isValid, errors } = signupValidator(req.body);
 
@@ -59,23 +57,24 @@ router.post("/signup", (req, res, next) => {
     return res.status(400).json({ error: true, errors });
   }
 
-  co(function* () {
-    const existingUser = yield User.findOne({ username });
+  try {
+    const existingUser = await User.findOne({ username });
 
-    if (existingUser) return res.status(422).send("Username is exist");
+    if (existingUser) {
+      return res.status(422).json({ message: "Username is already taken" });
+    }
 
     const user = new User(req.body);
-    return user.save();
-  })
-    .then(() =>
-      res.status(200).json({
-        message: {
-          msgBody: "Tao tai khoan thanh cong",
-          msgError: false,
-        },
-      })
-    )
-    .catch((err) => next(err));
+    await user.save();
+    return res.status(200).json({
+      message: {
+        msgBody: "Tạo tài khoản thành công",
+        msgError: false,
+      },
+    });
+  } catch (err) {
+    return res.status(500).json({ message: "Internal server error" });
+  }
 });
 
 router.get("/logout", (req, res) => {
@@ -96,13 +95,20 @@ router.get("/authen/:token", (req, res) => {
     const verified = jwt.verify(token, process.env.TOKEN_SECRET);
     const userId = verified._id;
     User.findById({ _id: userId }, { password: 0 }).then((user) => {
-      res.status(200).send({
+      if (!user) {
+        return res
+          .status(401)
+          .json({ isAuthenticated: false, error: "User not found" });
+      }
+      res.status(200).json({
         isAuthenticated: true,
         user: user,
       });
     });
   } catch (err) {
-    return res.status(401).json({ isAuthenticated: false });
+    return res
+      .status(401)
+      .json({ isAuthenticated: false, error: "Invalid token" });
   }
 });
 
